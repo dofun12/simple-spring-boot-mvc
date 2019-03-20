@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+
+    <title>Home Page</title></head>
+<body>
+<h1>Hello !</h1>
+<p>Welcome to <span th:text="${appName}">Our App</span></p>
+
+Book id: <input id="book-id">
+Book title: <input id="book-title">
+Book author: <input id="book-author">
+
+<button id="btn-save">Save</button>
+
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="application/javascript">
+    $(document).ready(function () {
+        $('#btn-save').on('click', function () {
+            var obj = { id: $('#book-id').val(), title: $('#book-title').val(), author:$('#book-author').val() };
+            console.log(obj);
+            $.ajax({
+                method: "POST",
+                dataType: "json",
+                url: "/api/books",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(obj)
+            })
+            .done(function( msg ) {
+                    alert( "Livro Salvo" );
+            });
+        });
+
+    });
+</script>
+</html>
