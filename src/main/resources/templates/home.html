@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app xmlns:th="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
 
     <title>Home Page</title></head>
@@ -16,28 +16,27 @@ Book author: <input id="book-author">
 <button id="btn-save">Save</button>
 
 </body>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="jquery-3.3.1.min.js"></script>
 
 <script type="application/javascript">
     function listBooks() {
         $.ajax({
             method: "GET",
             dataType: "json",
-            url: "/api/books",
+            url: "/api/books"
         }).done(function (response) {
             var inHTML = "";
-            console.log(response);
             $.each(response, function(index, value){
                 var newItem = "<tr>" +
                     "<td>"+ value.title + "</td>" +
                     "<td>"+ value.author + "</td>" +
-                    "</tr>"
+                    "</tr>";
                 inHTML += newItem;
             });
 
             $("table#dynamicTable").html(inHTML);
         });
-    };
+    }
 
     $(document).ready(function () {
         $('#btn-save').on('click', function () {
