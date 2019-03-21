@@ -54,14 +54,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.hibernate.dialect/sqlite-dialect -->
-		<dependency>
-			<groupId>org.hibernate.dialect</groupId>
-			<artifactId>sqlite-dialect</artifactId>
-			<version>0.1.0</version>
-		</dependency>
-
-
 	</dependencies>
 
 	<build>
