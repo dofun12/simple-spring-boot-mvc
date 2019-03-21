@@ -29,8 +29,7 @@ public class BookController {
  
     @GetMapping("/{id}")
     public Book findOne(@PathVariable Long id) {
-        return bookRepository.findById(id)
-          .orElseThrow(BookNotFoundException::new);
+        return bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
     }
  
     @PostMapping

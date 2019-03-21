@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.w3.org/1999/xhtml">
+<html ng-app xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
 
     <title>Home Page</title></head>
@@ -7,7 +7,9 @@
 <h1>Hello !</h1>
 <p>Welcome to <span th:text="${appName}">Our App</span></p>
 
-Book id: <input id="book-id">
+<table id="dynamicTable"></table>
+
+
 Book title: <input id="book-title">
 Book author: <input id="book-author">
 
@@ -15,10 +17,35 @@ Book author: <input id="book-author">
 
 </body>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
 <script type="application/javascript">
+    function listBooks() {
+        $.ajax({
+            method: "GET",
+            dataType: "json",
+            url: "/api/books",
+        }).done(function (response) {
+            var inHTML = "";
+            console.log(response);
+            $.each(response, function(index, value){
+                var newItem = "<tr>" +
+                    "<td>"+ value.title + "</td>" +
+                    "<td>"+ value.author + "</td>" +
+                    "</tr>"
+                inHTML += newItem;
+            });
+
+            $("table#dynamicTable").html(inHTML);
+        });
+    };
+
     $(document).ready(function () {
         $('#btn-save').on('click', function () {
-            var obj = { id: $('#book-id').val(), title: $('#book-title').val(), author:$('#book-author').val() };
+            var obj = {
+                id: $('#book-id').val(),
+                title: $('#book-title').val(),
+                author: $('#book-author').val()
+            };
             console.log(obj);
             $.ajax({
                 method: "POST",
@@ -27,10 +54,12 @@ Book author: <input id="book-author">
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(obj)
             })
-            .done(function( msg ) {
-                    alert( "Livro Salvo" );
+            .done(function (response) {
+                    alert("Livro Salvo");
+                listBooks();
             });
         });
+        listBooks();
 
     });
 </script>

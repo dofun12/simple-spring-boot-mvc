@@ -1,5 +1,6 @@
 package org.lemanoman.simpleweb.controller;
 
+import org.lemanoman.simpleweb.util.CommandUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,4 +22,13 @@ public class SimpleController {
         model.addAttribute("appName", appName);
         return "teste";
     }
+
+    @GetMapping("/system")
+    public String getSystem(Model model) {
+        model.addAttribute("systemname", CommandUtils.runCommand("uname -a") );
+        model.addAttribute("diskUsage", CommandUtils.runCommand("df -h") );
+        return "system";
+    }
+
+
 }
