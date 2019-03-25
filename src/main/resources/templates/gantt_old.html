@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+
+    <title>Home Page</title></head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-6 form-group">
+            <label>Tarefa id:</label>
+            <input class="form-control" disabled id="taskId" type="text">
+            <label>Tarefa taskName:</label>
+            <input class="form-control" id="taskName" type="text">
+            <label>Tarefa dateStart:</label>
+            <input class="form-control" id="dateStart" type="date">
+            <label>Tarefa dateEnd:</label>
+            <input class="form-control" id="dateEnd" type="date">
+            <label>Tarefa Porcentagem(%):</label>
+            <input class="form-control"  value="100" id="percentComplete" type="number">
+
+            <button class="btn btn-primary" id="btn-save">Salvar</button>
+            <button class="btn btn-primary" id="btn-cancel">Cancelar</button>
+            <button class="btn btn-primary" id="btn-atualizar">Atualizar</button>
+        </div>
+
+        <div class="col-6">
+            <table class="table" style="width: 100%;" id="dynamicTable"></table>
+        </div>
+        <div class="col-12">
+            <div id="chart_div"></div>
+        </div>
+
+    </div>
+
+</div>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/moment-with-locales.min.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript" src="js/jquery-utils.js"></script>
+<link rel="stylesheet" href="js/bootstrap-4.3.1-dist/css/bootstrap.css">
+<script type="application/javascript">
+    document.getElementById('dateStart').value = new moment().format("YYYY-MM-DDTHH:mm");
+    document.getElementById('dateEnd').value = new moment().add(2, 'days').format("YYYY-MM-DDTHH:mm");
+    var array = [];
+    google.charts.load('current', {'packages': ['gantt']});
+
+    function drawChart() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Task ID');
+        data.addColumn('string', 'Task Name');
+        data.addColumn('string', 'Resource');
+        data.addColumn('date', 'Start Date');
+        data.addColumn('date', 'End Date');
+        data.addColumn('number', 'Duration');
+        data.addColumn('number', 'Percent Complete');
+        data.addColumn('string', 'Dependencies');
+
+        var defaultRow = [
+            ['2019Spring', 'Spring 2019', 'spring',
+                new Date(2019, 2, 22), new Date(2019, 5, 20), null, 100, null],
+            ['2019Summer', 'Summer 2019', 'summer',
+                new Date(2019, 2, 21), new Date(2019, 5, 20), null, 100, null],
+            ['2019Autumn', 'Autumn 2019', 'autumn',
+                new Date(2019, 2, 21), new Date(2019, 5, 20), null, 100, null],
+            ['2019Winter', 'Winter 2019', 'winter',
+                new Date(2019, 2, 21), new Date(2019, 5, 21), null, 100, null],
+            ['2019Spring', 'Spring 2019', 'spring',
+                new Date(2019, 2, 22), new Date(2019, 5, 20), null, 50, null],
+            ['2019Summer', 'Summer 2019', 'summer',
+                new Date(2019, 2, 21), new Date(2019, 5, 20), null, 0, null],
+            ['2019Autumn', 'Autumn 2019', 'autumn',
+                new Date(2019, 2, 21), new Date(2019, 5, 20), null, 0, null],
+            ['2019Winter', 'Winter 2019', 'winter',
+                new Date(2019, 2, 21), new Date(2016, 5, 21), null, 0, null],
+            ['Football', 'Football Season', 'sports',
+                new Date(2019, 2, 4), new Date(2019, 5, 1), null, 100, null],
+            ['Baseball', 'Baseball Season', 'sports',
+                new Date(2019, 2, 31), new Date(2019, 5, 20), null, 14, null],
+            ['Basketball', 'Basketball Season', 'sports',
+                new Date(2019, 2, 28), new Date(2019, 5, 20), null, 86, null],
+            ['Hockey', 'Hockey Season', 'sports',
+                new Date(2019, 2, 8), new Date(2019, 5, 21), null, 89, null]
+        ];
+
+        var dataRows = [];
+        $.each(array, function (index, obj) {
+            /**
+             * dateEnd: "2019-03-26T14:41:00.000+0000"
+             dateStart: "2019-03-24T14:41:00.000+0000"
+             dependencies: null
+             duration: 2
+             id: 1
+             percentComplete: 30
+             taskId: "12312"
+             taskName: "3123123"
+             */
+
+            var dateStart = new moment(obj.dateStart, 'YYYY-MM-DDTHH:mm:ss');
+            var dateEnd = new moment(obj.dateEnd, 'YYYY-MM-DDTHH:mm:ss');
+            var duration = moment.duration(dateEnd.diff(new moment()));
+            console.log('duration',duration.as('days'));
+
+            var resource = 'concluido';
+            if(obj.percentComplete<100 && duration.as('days')<=0){
+                resource = 'atrasado';
+            }else if(obj.percentComplete<100 && duration.as('days')>0){
+                resource = 'previsto';
+            }else{
+                resource = 'concluido';
+            }
+            if(obj.percentComplete<100 && duration.as('days')<0){
+                dateEnd = new moment();
+            }
+            dataRows.push([
+                ''+obj.id,
+                obj.taskName,
+                resource,
+                dateStart.toDate(),
+                dateEnd.toDate(),
+                obj.duration,
+                obj.percentComplete,
+                null
+            ]);
+        });
+        console.log('dataRows', dataRows);
+        data.addRows(dataRows);
+
+        var options = {
+            height: 600,
+            gantt: {
+                innerGridHorizLine: {
+                    stroke: '#cccccc',
+                    strokeWidth: 2
+                },
+                percentStyle:{
+                    fill:'#757575'
+                },
+                trackHeight:30,
+                criticalPathEnabled: true,
+                palette: [
+                    {
+                        "color": "#aaffaa",
+                        "dark": "#f4b042",
+                        "light": "#f45641"
+                    }
+                ]
+            },
+            timeline: {
+                groupByRowLabel: true
+            }
+        };
+
+        var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+    }
+
+    function onDelete(event) {
+        deleteId('api/tarefas/'+event.data.obj.id,function () {
+            alert(event.data.obj.taskName+" deletado!");
+            listBooks();
+        });
+    }
+
+    function onEdit(event) {
+        edit = true;
+        $('#btn-save').hide();
+        $('#btn-cancel').show();
+        $('#btn-atualizar').show();
+
+        console.log(new moment(event.data.obj.dateStart));
+        document.getElementById('taskId').value=event.data.obj.id;
+        document.getElementById('taskName').value=event.data.obj.taskName;
+        document.getElementById('dateStart').value=new moment(event.data.obj.dateStart, 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD');
+        document.getElementById('dateEnd').value=new moment(event.data.obj.dateEnd, 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD');
+        document.getElementById('percentComplete').value=event.data.obj.percentComplete;
+    }
+
+    function listBooks() {
+
+        getJson('api/tarefas', function (response) {
+            console.log(response);
+            createSimpleTable('table#dynamicTable', response,onDelete,onEdit);
+            array = response;
+            google.charts.setOnLoadCallback(drawChart);
+
+        });
+
+
+    }
+
+    function simpleTableDelete(id) {
+        deleteId('api/tarefas/' + id, listBooks());
+
+    }
+
+    /**
+     * Semana 1: 11/03 – 17/03: Primeira rega (1x semanal)
+     Semana 2: 18/03 – 24/03: Segunda rega (1x semanal)
+     Semana 3: 25/03 – 31/03: Terceira rega (1 x semanal)
+     Quinzena 1: 01/04 – 14/04: Quarta rega (1x quinzenal)
+     Quinzena 2: 15/04 – 28/04: Quinta rega (1x quinzenal)
+     Quinzena 3: 29/04 – 12/05: Sexta rega (1x quinzenal)
+     */
+
+    $(document).ready(function () {
+        $('#btn-cancel').hide();
+        $('#btn-atualizar').hide();
+        $('#btn-save').on('click', function () {
+            var dateStart = moment($('#dateStart').val(), 'YYYY-MM-DDTHH:mm');
+            var dateEnd = moment($('#dateEnd').val(), 'YYYY-MM-DDTHH:mm');
+            var duration = dateEnd.diff(dateStart, 'days');
+            if(!duration){
+                duration =1;
+            }
+            var obj = {
+                taskName: $('#taskName').val(),
+                dateStart: $('#dateStart').val(),
+                dateEnd: $('#dateEnd').val(),
+                duration: duration,
+                percentComplete: $('#percentComplete').val()
+            };
+            console.log(obj);
+            postJsonData('/api/tarefas', obj, function (response) {
+                alert("Livro Salvo");
+                listBooks();
+            });
+        });
+        $('#btn-atualizar').on('click', function () {
+            if($('#taskId').val()) {
+                var dateStart = moment($('#dateStart').val(), 'YYYY-MM-DDTHH:mm');
+                var dateEnd = moment($('#dateEnd').val(), 'YYYY-MM-DDTHH:mm');
+                var duration = dateEnd.diff(dateStart, 'days');
+                if (!duration) {
+                    duration = 1;
+                }
+                var obj = {
+                    id: $('#taskId').val() ,
+                    taskName: $('#taskName').val(),
+                    dateStart: $('#dateStart').val(),
+                    dateEnd: $('#dateEnd').val(),
+                    duration: duration,
+                    percentComplete: $('#percentComplete').val()
+                };
+                console.log(obj);
+                putJsonData('/api/tarefas/'+$('#taskId').val(), obj, function (response) {
+                    alert("Alterado");
+                    listBooks();
+                });
+            }
+        });
+        $('#btn-cancel').on('click', function () {
+            $('#btn-cancel').hide();
+            $('#btn-atualizar').hide();
+            $('#btn-save').show();
+        });
+        listBooks();
+
+    });
+</script>
+<script type="text/javascript" src="js/bootstrap-4.3.1-dist/js/boostrap.js"></script>
+</body>
+</html>

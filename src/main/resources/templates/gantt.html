@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+
+    <title>Home Page</title></head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-6 form-group">
+            <label>Tarefa id:</label>
+            <input class="form-control" disabled id="taskId" type="text">
+            <label>Tarefa taskName:</label>
+            <input class="form-control" id="taskName" type="text">
+            <label>Tarefa dateStart:</label>
+            <input class="form-control" id="dateStart" type="date">
+            <label>Tarefa dateEnd:</label>
+            <input class="form-control" id="dateEnd" type="date">
+            <label>Tarefa previsao:</label>
+            <input class="form-control" id="datePreview" type="date">
+            <label>Tarefa Porcentagem(%):</label>
+            <input class="form-control"  value="100" id="percentComplete" type="number">
+
+            <button class="btn btn-primary" id="btn-save">Salvar</button>
+            <button class="btn btn-primary" id="btn-cancel">Cancelar</button>
+            <button class="btn btn-primary" id="btn-atualizar">Atualizar</button>
+        </div>
+
+        <div class="col-6">
+            <table class="table" style="width: 100%;" id="dynamicTable"></table>
+        </div>
+        <div class="col-12">
+            <div id="chart-container">FusionCharts XT will load here!</div>
+        </div>
+
+    </div>
+
+</div>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/moment-with-locales.min.js"></script>
+<script src="js/fusioncharts/js/fusioncharts.js"></script>
+<script src="js/fusioncharts/js/themes/fusioncharts.theme.fusion.js"></script>
+<script type="text/javascript" src="js/jquery-utils.js"></script>
+<link rel="stylesheet" href="js/bootstrap-4.3.1-dist/css/bootstrap.css">
+<link rel="stylesheet" href="js/frappe/frappe-gantt.css">
+<script type="application/javascript">
+    document.getElementById('dateStart').value = new moment().format("YYYY-MM-DDTHH:mm");
+    document.getElementById('dateEnd').value = new moment().add(2, 'days').format("YYYY-MM-DDTHH:mm");
+    var array = [];
+    var gantt;
+
+
+    function loadFusionCharts(response) {
+        var tasksJson = [];
+        var headers = [];
+        $.each(response, function (index, obj) {
+            tasksJson.push({
+                "label":"Planejado",
+                "processid": obj.id+"",
+                "start": moment(obj.dateStart, 'YYYY-MM-DDTHH:mm:ss').format("DD/MM/YYYY"),
+                "end": moment(obj.datePreview, 'YYYY-MM-DDTHH:mm:ss').format("DD/MM/YYYY"),
+                "id": obj.id+"-1",
+                "color": "#0000AA",
+                "alpha": "100",
+                "height": "27%",
+                "toppadding": "32%"
+            });
+            var dateStart = new moment(obj.dateStart, 'YYYY-MM-DDTHH:mm:ss');
+            var dateEnd = new moment(obj.dateEnd, 'YYYY-MM-DDTHH:mm:ss');
+            var datePreview = new moment(obj.datePreview, 'YYYY-MM-DDTHH:mm:ss');
+            var duration = moment.duration(dateEnd.diff(datePreview));
+            var periodStart = moment.duration(dateStart.diff(new moment()));
+            var color = "#e44a00";
+            if(duration.as('days')<=0){
+                color = "#88D8B0";
+            }
+            if(periodStart.as('days')<0){
+                tasksJson.push({
+                    "label":"Atual",
+                    "processid": obj.id+"",
+                    "start": moment(obj.dateStart, 'YYYY-MM-DDTHH:mm:ss').format("DD/MM/YYYY"),
+                    "end": moment(obj.dateEnd, 'YYYY-MM-DDTHH:mm:ss').format("DD/MM/YYYY"),
+                    "id": obj.id+"1",
+                    "color": color,
+                    "alpha": "100",
+                    "height": "27%",
+                    "toppadding": "65%"
+                });
+            }
+
+            headers.push({
+                "label": obj.taskName,
+                "id": ""+obj.id
+            })
+        });
+        var dataSource = {
+            "chart": {
+                "dateformat": "dd/mm/yyyy",
+                "caption": "Planejamento Projeto",
+                "plottooltext": "<b>$label</b><br>Start: <b>$start</b><br>End: <b>$end</b>",
+                "theme": "fusion"
+            },
+            "legend": {
+                "item": [
+                    {
+                        "label": "Planejado",
+                        "color": "#0000AA"
+                    },
+                    {
+                        "label": "Atual",
+                        "color": "#88D8B0"
+                    },
+                    {
+                        "label": "Atrasado",
+                        "color": "#e44a00"
+                    }
+                ]
+            },
+            "tasks": {
+                "task": tasksJson
+            },
+            "processes": {
+                "headertext": "Task",
+                "align": "left",
+                "process": headers
+            },
+            "categories": [
+                {
+                    "category": [
+                        {
+                            "start": "4/2/2019",
+                            "end": "30/2/2019",
+                            "label": "Fevereiro"
+                        },
+                        {
+                            "start": "1/4/2019",
+                            "end": "30/4/2019",
+                            "label": "Abril"
+                        },
+                        {
+                            "start": "1/5/2019",
+                            "end": "31/5/2019",
+                            "label": "Maio"
+                        },
+                        {
+                            "start": "1/6/2019",
+                            "end": "30/6/2019",
+                            "label": "Junho"
+                        }
+                    ]
+                },
+                {
+                    "category": [
+                        {
+                            "start": "4/2/2019",
+                            "end": "10/2/2019",
+                            "label": "Semana 1"
+                        },
+                        {
+                            "start": "10/2/2019",
+                            "end": "17/2/2019",
+                            "label": "Semana 2"
+                        },
+                        {
+                            "start": "18/2/2019",
+                            "end": "24/2/2019",
+                            "label": "Semana 3"
+                        },
+                        {
+                            "start": "25/2/2019",
+                            "end": "02/3/2019",
+                            "label": "Semana 4"
+                        },
+                        {
+                            "start": "4/3/2019",
+                            "end": "10/3/2019",
+                            "label": "Semana 5"
+                        },
+                        {
+                            "start": "11/3/2019",
+                            "end": "17/3/2019",
+                            "label": "Semana 6"
+                        },
+                        {
+                            "start": "18/3/2019",
+                            "end": "24/3/2019",
+                            "label": "Semana 7"
+                        },
+                        {
+                            "start": "19/3/2019",
+                            "end": "24/3/2019",
+                            "label": "Semana 8"
+                        },
+                        {
+                            "start": "25/3/2019",
+                            "end": "31/3/2019",
+                            "label": "Semana 9"
+                        },
+                        {
+                            "start": "1/4/2019",
+                            "end": "7/4/2019",
+                            "label": "Semana 10"
+                        },
+                        {
+                            "start": "8/4/2019",
+                            "end": "14/4/2019",
+                            "label": "Semana 11"
+                        },
+                        {
+                            "start": "15/4/2019",
+                            "end": "21/4/2019",
+                            "label": "Semana 12"
+                        },
+                        {
+                            "start": "22/4/2019",
+                            "end": "28/4/2019",
+                            "label": "Semana 13"
+                        },
+                        {
+                            "start": "29/4/2019",
+                            "end": "5/5/2019",
+                            "label": "Semana 14"
+                        },
+                        {
+                            "start": "6/5/2019",
+                            "end": "12/5/2019",
+                            "label": "Semana 15"
+                        },
+                        {
+                            "start": "13/5/2019",
+                            "end": "19/5/2019",
+                            "label": "Semana 16"
+                        },
+                        {
+                            "start": "20/5/2019",
+                            "end": "26/5/2019",
+                            "label": "Semana 17"
+                        },
+                        {
+                            "start": "27/5/2019",
+                            "end": "2/6/2019",
+                            "label": "Semana 18"
+                        },
+                        {
+                            "start": "3/6/2019",
+                            "end": "9/6/2019",
+                            "label": "Semana 19"
+                        },
+                        {
+                            "start": "10/6/2019",
+                            "end": "16/6/2019",
+                            "label": "Semana 20"
+                        },
+                        {
+                            "start": "17/6/2019",
+                            "end": "23/6/2019",
+                            "label": "Semana 21"
+                        },
+                        {
+                            "start": "24/6/2019",
+                            "end": "30/6/2019",
+                            "label": "Semana 22"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        console.log(dataSource);
+        FusionCharts.ready(function() {
+            var myChart = new FusionCharts({
+                type: "gantt",
+                renderAt: "chart-container",
+                width: "100%",
+                height: "600",
+                dataFormat: "json",
+                dataSource:dataSource
+            }).render();
+        });
+    }
+
+
+    function onDelete(event) {
+        deleteId('api/tarefas/'+event.data.obj.id,function () {
+            alert(event.data.obj.taskName+" deletado!");
+            listBooks();
+        });
+    }
+
+    function onEdit(event) {
+        edit = true;
+        $('#btn-save').hide();
+        $('#btn-cancel').show();
+        $('#btn-atualizar').show();
+
+        console.log(new moment(event.data.obj.dateStart));
+        document.getElementById('taskId').value=event.data.obj.id;
+        document.getElementById('taskName').value=event.data.obj.taskName;
+        document.getElementById('dateStart').value=new moment(event.data.obj.dateStart, 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD');
+        document.getElementById('dateEnd').value=new moment(event.data.obj.dateEnd, 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD');
+        document.getElementById('percentComplete').value=event.data.obj.percentComplete;
+    }
+
+    function listBooks() {
+
+        getJson('api/tarefas', function (response) {
+            console.log(response);
+            createSimpleTable('table#dynamicTable', response,onDelete,onEdit);
+            loadFusionCharts(response);
+        });
+
+
+    }
+
+    function simpleTableDelete(id) {
+        deleteId('api/tarefas/' + id, listBooks());
+
+    }
+
+    /**
+     * Semana 1: 11/03 – 17/03: Primeira rega (1x semanal)
+     Semana 2: 18/03 – 24/03: Segunda rega (1x semanal)
+     Semana 3: 25/03 – 31/03: Terceira rega (1 x semanal)
+     Quinzena 1: 01/04 – 14/04: Quarta rega (1x quinzenal)
+     Quinzena 2: 15/04 – 28/04: Quinta rega (1x quinzenal)
+     Quinzena 3: 29/04 – 12/05: Sexta rega (1x quinzenal)
+     */
+
+    $(document).ready(function () {
+
+        $('#btn-cancel').hide();
+        $('#btn-atualizar').hide();
+        $('#btn-save').on('click', function () {
+            var dateStart = moment($('#dateStart').val(), 'YYYY-MM-DDTHH:mm');
+            var dateEnd = moment($('#dateEnd').val(), 'YYYY-MM-DDTHH:mm');
+            var duration = dateEnd.diff(dateStart, 'days');
+            if(!duration){
+                duration =1;
+            }
+            var obj = {
+                taskName: $('#taskName').val(),
+                dateStart: $('#dateStart').val(),
+                dateEnd: $('#dateEnd').val(),
+                duration: duration,
+                percentComplete: $('#percentComplete').val(),
+                datePreview: $('#datePreview').val()
+            };
+            console.log(obj);
+            postJsonData('/api/tarefas', obj, function (response) {
+                alert("Livro Salvo");
+                listBooks();
+            });
+        });
+        $('#btn-atualizar').on('click', function () {
+            if($('#taskId').val()) {
+                var dateStart = moment($('#dateStart').val(), 'YYYY-MM-DDTHH:mm');
+                var dateEnd = moment($('#dateEnd').val(), 'YYYY-MM-DDTHH:mm');
+                var duration = dateEnd.diff(dateStart, 'days');
+                if (!duration) {
+                    duration = 1;
+                }
+                var obj = {
+                    id: $('#taskId').val() ,
+                    taskName: $('#taskName').val(),
+                    dateStart: $('#dateStart').val(),
+                    dateEnd: $('#dateEnd').val(),
+                    duration: duration,
+                    percentComplete: $('#percentComplete').val(),
+                    datePreview: $('#datePreview').val()
+                };
+                console.log(obj);
+                putJsonData('/api/tarefas/'+$('#taskId').val(), obj, function (response) {
+                    alert("Alterado");
+                    listBooks();
+                });
+            }
+        });
+        $('#btn-cancel').on('click', function () {
+            $('#btn-cancel').hide();
+            $('#btn-atualizar').hide();
+            $('#btn-save').show();
+        });
+        listBooks();
+
+    });
+</script>
+<script type="text/javascript" src="js/bootstrap-4.3.1-dist/js/boostrap.js"></script>
+</body>
+</html>

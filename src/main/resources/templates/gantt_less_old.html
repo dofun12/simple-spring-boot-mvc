@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+
+    <title>Home Page</title></head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-6 form-group">
+            <label>Tarefa id:</label>
+            <input class="form-control" disabled id="taskId" type="text">
+            <label>Tarefa taskName:</label>
+            <input class="form-control" id="taskName" type="text">
+            <label>Tarefa dateStart:</label>
+            <input class="form-control" id="dateStart" type="date">
+            <label>Tarefa dateEnd:</label>
+            <input class="form-control" id="dateEnd" type="date">
+            <label>Tarefa Porcentagem(%):</label>
+            <input class="form-control"  value="100" id="percentComplete" type="number">
+
+            <button class="btn btn-primary" id="btn-save">Salvar</button>
+            <button class="btn btn-primary" id="btn-cancel">Cancelar</button>
+            <button class="btn btn-primary" id="btn-atualizar">Atualizar</button>
+        </div>
+
+        <div class="col-6">
+            <table class="table" style="width: 100%;" id="dynamicTable"></table>
+        </div>
+        <div class="col-12">
+            <svg id="gantt"></svg>
+        </div>
+
+    </div>
+
+</div>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/moment-with-locales.min.js"></script>
+<script src="js/snap.svg-min.js"></script>
+<script src="js/frappe/frappe-gantt.min.js"></script>
+<script type="text/javascript" src="js/jquery-utils.js"></script>
+<link rel="stylesheet" href="js/bootstrap-4.3.1-dist/css/bootstrap.css">
+<link rel="stylesheet" href="js/frappe/frappe-gantt.css">
+<script type="application/javascript">
+    document.getElementById('dateStart').value = new moment().format("YYYY-MM-DDTHH:mm");
+    document.getElementById('dateEnd').value = new moment().add(2, 'days').format("YYYY-MM-DDTHH:mm");
+    var array = [];
+    var gantt;
+
+
+
+    function onDelete(event) {
+        deleteId('api/tarefas/'+event.data.obj.id,function () {
+            alert(event.data.obj.taskName+" deletado!");
+            listBooks();
+        });
+    }
+
+    function onEdit(event) {
+        edit = true;
+        $('#btn-save').hide();
+        $('#btn-cancel').show();
+        $('#btn-atualizar').show();
+
+        console.log(new moment(event.data.obj.dateStart));
+        document.getElementById('taskId').value=event.data.obj.id;
+        document.getElementById('taskName').value=event.data.obj.taskName;
+        document.getElementById('dateStart').value=new moment(event.data.obj.dateStart, 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD');
+        document.getElementById('dateEnd').value=new moment(event.data.obj.dateEnd, 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD');
+        document.getElementById('percentComplete').value=event.data.obj.percentComplete;
+    }
+
+    function listBooks() {
+
+        getJson('api/tarefas', function (response) {
+            console.log(response);
+            createSimpleTable('table#dynamicTable', response,onDelete,onEdit);
+
+            var tasksJson = [];
+            $.each(response, function (index, obj) {
+                tasksJson.push({
+                    id: obj.id,
+                    name: obj.taskName,
+                    start: obj.dateStart,
+                    end: obj.dateEnd,
+                    progress: obj.percentComplete,
+                    dependencies: null
+                });
+            });
+            var tasks = [
+                {
+                    id: 'Task 1',
+                    name: 'Redesign website',
+                    start: '2016-12-28',
+                    end: '2016-12-31',
+                    progress: 20,
+                    dependencies: 'Task 2, Task 3'
+                }
+            ];
+            gantt = new Gantt("#gantt", tasksJson,{
+                header_height: 50,
+                column_width: 10,
+                step: 24,
+                view_modes: ['Quarter Day', 'Half Day', 'Day', 'Week', 'Month'],
+                bar_height: 20,
+                bar_corner_radius: 3,
+                arrow_curve: 5,
+                padding: 18,
+                view_mode: 'Day',
+                date_format: 'YYYY-MM-DD',
+                custom_popup_html: null
+            });
+            array = response;
+        });
+
+
+    }
+
+    function simpleTableDelete(id) {
+        deleteId('api/tarefas/' + id, listBooks());
+
+    }
+
+    /**
+     * Semana 1: 11/03 – 17/03: Primeira rega (1x semanal)
+     Semana 2: 18/03 – 24/03: Segunda rega (1x semanal)
+     Semana 3: 25/03 – 31/03: Terceira rega (1 x semanal)
+     Quinzena 1: 01/04 – 14/04: Quarta rega (1x quinzenal)
+     Quinzena 2: 15/04 – 28/04: Quinta rega (1x quinzenal)
+     Quinzena 3: 29/04 – 12/05: Sexta rega (1x quinzenal)
+     */
+
+    $(document).ready(function () {
+
+        $('#btn-cancel').hide();
+        $('#btn-atualizar').hide();
+        $('#btn-save').on('click', function () {
+            var dateStart = moment($('#dateStart').val(), 'YYYY-MM-DDTHH:mm');
+            var dateEnd = moment($('#dateEnd').val(), 'YYYY-MM-DDTHH:mm');
+            var duration = dateEnd.diff(dateStart, 'days');
+            if(!duration){
+                duration =1;
+            }
+            var obj = {
+                taskName: $('#taskName').val(),
+                dateStart: $('#dateStart').val(),
+                dateEnd: $('#dateEnd').val(),
+                duration: duration,
+                percentComplete: $('#percentComplete').val()
+            };
+            console.log(obj);
+            postJsonData('/api/tarefas', obj, function (response) {
+                alert("Livro Salvo");
+                listBooks();
+            });
+        });
+        $('#btn-atualizar').on('click', function () {
+            if($('#taskId').val()) {
+                var dateStart = moment($('#dateStart').val(), 'YYYY-MM-DDTHH:mm');
+                var dateEnd = moment($('#dateEnd').val(), 'YYYY-MM-DDTHH:mm');
+                var duration = dateEnd.diff(dateStart, 'days');
+                if (!duration) {
+                    duration = 1;
+                }
+                var obj = {
+                    id: $('#taskId').val() ,
+                    taskName: $('#taskName').val(),
+                    dateStart: $('#dateStart').val(),
+                    dateEnd: $('#dateEnd').val(),
+                    duration: duration,
+                    percentComplete: $('#percentComplete').val()
+                };
+                console.log(obj);
+                putJsonData('/api/tarefas/'+$('#taskId').val(), obj, function (response) {
+                    alert("Alterado");
+                    listBooks();
+                });
+            }
+        });
+        $('#btn-cancel').on('click', function () {
+            $('#btn-cancel').hide();
+            $('#btn-atualizar').hide();
+            $('#btn-save').show();
+        });
+        listBooks();
+
+    });
+</script>
+<script type="text/javascript" src="js/bootstrap-4.3.1-dist/js/boostrap.js"></script>
+</body>
+</html>
