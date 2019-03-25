@@ -299,7 +299,9 @@
         document.getElementById('taskName').value=event.data.obj.taskName;
         document.getElementById('dateStart').value=new moment(event.data.obj.dateStart, 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD');
         document.getElementById('dateEnd').value=new moment(event.data.obj.dateEnd, 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD');
+        document.getElementById('datePreview').value=new moment(event.data.obj.datePreview, 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD');
         document.getElementById('percentComplete').value=event.data.obj.percentComplete;
+
     }
 
     function listBooks() {
