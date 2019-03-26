@@ -27,9 +27,10 @@ public class Tarefa {
     @Column(nullable = false)
     private Date dateStart;
 
-    @Column(nullable = false)
+    @Column
     private Date dateEnd;
 
+    @Column(nullable = false)
     private Date datePreview;
 
     @Column(nullable = false)
