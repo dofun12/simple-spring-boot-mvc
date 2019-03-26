@@ -16,7 +16,7 @@
     <div class="row">
         <div class="col-6 form-group">
             <label>Tarefa id:</label>
-            <input class="form-control" disabled id="taskId" type="text">
+            <input class="form-control" disabled id="taskId" type="number">
             <label>Tarefa taskName:</label>
             <input class="form-control" id="taskName" type="text">
             <label>Tarefa dateStart:</label>
@@ -28,12 +28,13 @@
             <label>Tarefa Porcentagem(%):</label>
             <input class="form-control"  value="100" id="percentComplete" type="number">
 
+
             <button class="btn btn-primary" id="btn-save">Salvar</button>
-            <button class="btn btn-primary" id="btn-cancel">Cancelar</button>
             <button class="btn btn-primary" id="btn-atualizar">Atualizar</button>
+            <button class="btn btn-danger" style="display: none;" id="btn-cancel">Cancelar</button>
         </div>
 
-        <div class="col-12">
+        <div class="col-12" style="padding: 10px;">
             <table class="table" style="width: 100%;" id="dynamicTable"></table>
         </div>
     </div>

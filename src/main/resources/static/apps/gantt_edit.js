@@ -10,11 +10,21 @@ function onDelete(event) {
     });
 }
 
+function clear() {
+    $('#taskId').val('');
+    $('#taskName').val('');
+    $('#dateStart').val('');
+    $('#dateEnd').val('');
+    $('#percentComplete').val('');
+    $('#datePreview').val('');
+}
+
 function onEdit(event) {
     edit = true;
     $('#btn-save').hide();
     $('#btn-cancel').show();
     $('#btn-atualizar').show();
+    $('#taskId').val('');
 
     console.log(new moment(event.data.obj.dateStart));
     document.getElementById('taskId').value=event.data.obj.id;
@@ -100,6 +110,7 @@ $(document).ready(function () {
         $('#btn-cancel').hide();
         $('#btn-atualizar').hide();
         $('#btn-save').show();
+        clear();
     });
     listBooks();
 

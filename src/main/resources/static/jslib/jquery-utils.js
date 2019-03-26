@@ -38,13 +38,18 @@ function deleteId(url, onComplete) {
 
 function createSimpleTable(selector, array, onDelete, onEdit) {
     $(selector).empty();
+    var headers = {};
+    var tbody = $("<tbody></tbody>");
     $.each(array, function (index, obj) {
+
         var tr = $("<tr></tr>");
         Object.keys(obj).forEach(function (key) {
             var td = $("<td></td>");
             td.html(obj[key]);
+            headers[key] = key;
             tr.append(td);
         });
+        headers['actions'] = 'actions';
         var tdAction = $("<td></td>");
         var deleteBtn = $("<button></button>");
         deleteBtn.html("Deletar");
@@ -57,8 +62,16 @@ function createSimpleTable(selector, array, onDelete, onEdit) {
         tdAction.append(deleteBtn);
         tdAction.append(editBtn);
         tr.append(tdAction);
-        $(selector).append(tr);
-
+        tbody.append(tr);
     });
+    var thead = $("<thead></thead>");
+    var tr = $("<tr></tr>");
+    Object.keys(headers).forEach(function (key) {
+        tr.append("<th>"+key+"</th>");
+    });
+    thead.append(tr);
+    $(selector).append(thead);
+    $(selector).append(tbody);
+
 
 }
