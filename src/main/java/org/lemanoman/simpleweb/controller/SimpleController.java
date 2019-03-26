@@ -29,6 +29,12 @@ public class SimpleController {
         return "gantt";
     }
 
+    @GetMapping("/gantt/edit")
+    public String ganttEdit(Model model) {
+        model.addAttribute("appName", appName);
+        return "gantt_edit";
+    }
+
     @GetMapping("/system")
     public String getSystem(Model model) {
         model.addAttribute("systemname", CommandUtils.runCommand("uname -a") );

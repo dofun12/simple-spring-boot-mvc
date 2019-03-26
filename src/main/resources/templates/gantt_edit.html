@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+
+    <title>Home Page</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/jslib/bootstrap-4.3.1-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/jslib/frappe/frappe-gantt.css">
+</head>
+
+
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-6 form-group">
+            <label>Tarefa id:</label>
+            <input class="form-control" disabled id="taskId" type="text">
+            <label>Tarefa taskName:</label>
+            <input class="form-control" id="taskName" type="text">
+            <label>Tarefa dateStart:</label>
+            <input class="form-control" id="dateStart" type="date">
+            <label>Tarefa dateEnd:</label>
+            <input class="form-control" id="dateEnd" type="date">
+            <label>Tarefa previsao:</label>
+            <input class="form-control" id="datePreview" type="date">
+            <label>Tarefa Porcentagem(%):</label>
+            <input class="form-control"  value="100" id="percentComplete" type="number">
+
+            <button class="btn btn-primary" id="btn-save">Salvar</button>
+            <button class="btn btn-primary" id="btn-cancel">Cancelar</button>
+            <button class="btn btn-primary" id="btn-atualizar">Atualizar</button>
+        </div>
+
+        <div class="col-12">
+            <table class="table" style="width: 100%;" id="dynamicTable"></table>
+        </div>
+    </div>
+
+</div>
+<script src="/jslib/jquery-3.3.1.min.js"></script>
+<script src="/jslib/moment-with-locales.min.js"></script>
+<script src="/jslib/fusioncharts/js/fusioncharts.js"></script>
+<script src="/jslib/fusioncharts/js/themes/fusioncharts.theme.fusion.js"></script>
+<script type="text/javascript" src="/jslib/jquery-utils.js"></script>
+<script type="text/javascript" src="/jslib/bootstrap-4.3.1-dist/js/bootstrap.js"></script>
+<script type="text/javascript" src="/apps/gantt_edit.js"></script>
+</body>
+</html>
