@@ -1,5 +1,6 @@
 package org.lemanoman.simpleweb.controller;
 
+import org.lemanoman.simpleweb.TokenAuthenticationService;
 import org.lemanoman.simpleweb.exception.NotFoundException;
 
 import org.lemanoman.simpleweb.exception.IdMismatchException;
@@ -9,8 +10,12 @@ import org.lemanoman.simpleweb.repo.TarefaRepository;
 import org.lemanoman.simpleweb.repo.TarefaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticatedPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -21,7 +26,10 @@ public class TarefaController {
     private TarefaRepository tarefaRepository;
 
     @GetMapping
-    public Iterable findAll() {
+    public Iterable findAll(HttpServletRequest request) {
+        String token = request.getHeader(TokenAuthenticationService.HEADER_STRING).replace(TokenAuthenticationService.TOKEN_PREFIX,"");
+        UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken)TokenAuthenticationService.getAuthentication(request);
+        System.out.println(auth.getPrincipal());
         return tarefaRepository.findAll();
     }
 

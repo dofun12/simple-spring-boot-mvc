@@ -1,10 +1,14 @@
 package org.lemanoman.simpleweb.controller;
 
+import org.lemanoman.simpleweb.TokenAuthenticationService;
 import org.lemanoman.simpleweb.util.CommandUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class SimpleController {
@@ -12,8 +16,8 @@ public class SimpleController {
     String appName;
  
     @GetMapping("/")
-    public String homePage(Model model) {
-        model.addAttribute("appName", appName);
+    public String homePage(HttpServletRequest request) {
+        Authentication auth = TokenAuthenticationService.getAuthentication(request);
         return "home";
     }
 

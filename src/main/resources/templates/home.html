@@ -14,6 +14,12 @@ Senha <input type="password" id="password" name="password" />
 
 <script type="application/javascript">
     $(document).ready(function () {
+        if(sessionStorage.auth){
+            var httpHeaders = { 'Authorization' : sessionStorage.auth };
+            new Headers(httpHeaders);
+        }
+
+
         $('#btn-login').on('click', function () {
             var obj = {
                 'username': $('#login').val(),
