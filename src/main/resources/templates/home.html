@@ -4,58 +4,37 @@
 
     <title>Home Page</title></head>
 <body>
-<h1>Hello !</h1>
-<p>Welcome to <span th:text="${appName}">Our App</span></p>
+Login <input type="text" id="login" name="login" />
+Senha <input type="password" id="password" name="password" />
 
-<table id="dynamicTable"></table>
-
-
-Book title: <input id="book-title">
-Book author: <input id="book-author">
-
-<button id="btn-save">Save</button>
+<button id="btn-login">Login</button>
 
 </body>
-<script src="jquery-3.3.1.min.js"></script>
+<script src="/jslib/jquery-3.3.1.min.js"></script>
 
 <script type="application/javascript">
-    function listBooks() {
-        $.ajax({
-            method: "GET",
-            dataType: "json",
-            url: "/api/books"
-        }).done(function (response) {
-            var inHTML = "";
-            $.each(response, function(index, value){
-                var newItem = "<tr>" +
-                    "<td>"+ value.title + "</td>" +
-                    "<td>"+ value.author + "</td>" +
-                    "</tr>";
-                inHTML += newItem;
-            });
-
-            $("table#dynamicTable").html(inHTML);
-        });
-    }
-
     $(document).ready(function () {
-        $('#btn-save').on('click', function () {
+        $('#btn-login').on('click', function () {
             var obj = {
-                id: $('#book-id').val(),
-                title: $('#book-title').val(),
-                author: $('#book-author').val()
+                'username': $('#login').val(),
+                'password': $('#password').val(),
             };
-            console.log(obj);
+            console.log('Teste',JSON.stringify(obj));
             $.ajax({
                 method: "POST",
-                dataType: "json",
-                url: "/api/books",
+                url: "/login",
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(obj)
-            })
-            .done(function (response) {
-                    alert("Livro Salvo");
-                listBooks();
+                data: JSON.stringify(obj),
+                processData: false,
+                success: function(data, textStatus, request){
+                    console.log('teste1');
+                    sessionStorage.setItem('auth',request.getResponseHeader('authorization'));
+                    window.location = window.location+"default/gantt";
+                },
+                error: function (request, textStatus, errorThrown) {
+                    //alert('Erro ao logar');
+                    console.log('teste2',errorThrown);
+                }
             });
         });
         listBooks();

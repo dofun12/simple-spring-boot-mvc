@@ -60,7 +60,16 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.47</version>
 		</dependency>
-
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.lemanoman</groupId>
+			<artifactId>sqlite-dialect</artifactId>
+			<version>0.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

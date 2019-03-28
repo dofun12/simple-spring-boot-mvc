@@ -4,7 +4,14 @@ function postJsonData(url, data, onComplete) {
         dataType: "json",
         url: url,
         contentType: "application/json; charset=utf-8",
-        data: JSON.stringify(data)
+        data: JSON.stringify(data),
+        beforeSend : function(xhr) {
+            // set header if JWT is set
+            if (window.sessionStorage.auth) {
+                xhr.setRequestHeader("authorization", sessionStorage.auth);
+            }
+
+        },
     }).done(onComplete);
 }
 
@@ -13,6 +20,13 @@ function putJsonData(url, data, onComplete) {
         method: "PUT",
         dataType: "json",
         url: url,
+        beforeSend : function(xhr) {
+            // set header if JWT is set
+            if (window.sessionStorage.auth) {
+                xhr.setRequestHeader("authorization", sessionStorage.auth);
+            }
+
+        },
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(data)
     }).done(onComplete);
@@ -23,6 +37,13 @@ function getJson(url, onComplete) {
         method: "GET",
         dataType: "json",
         url: url,
+        beforeSend : function(xhr) {
+            // set header if JWT is set
+            if (window.sessionStorage.auth) {
+                xhr.setRequestHeader("authorization", sessionStorage.auth);
+            }
+
+        },
         contentType: "application/json; charset=utf-8"
     }).done(onComplete);
 }
@@ -32,6 +53,13 @@ function deleteId(url, onComplete) {
         method: "DELETE",
         dataType: "json",
         url: url,
+        beforeSend : function(xhr) {
+            // set header if JWT is set
+            if (window.sessionStorage.auth) {
+                xhr.setRequestHeader("authorization", sessionStorage.auth);
+            }
+
+        },
         contentType: "application/json; charset=utf-8"
     }).always(onComplete);
 }

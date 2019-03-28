@@ -17,29 +17,31 @@ public class SimpleController {
         return "home";
     }
 
-    @GetMapping("/teste")
+    final String prefix = "/default";
+
+    @GetMapping(prefix+"/teste")
     public String teste(Model model) {
         model.addAttribute("appName", appName);
-        return "teste";
+        return prefix+"/teste";
     }
 
-    @GetMapping("/gantt")
+    @GetMapping(prefix+"/gantt")
     public String gantt(Model model) {
         model.addAttribute("appName", appName);
-        return "gantt";
+        return prefix+"/gantt";
     }
 
-    @GetMapping("/gantt/edit")
+    @GetMapping(prefix+"/gantt/edit")
     public String ganttEdit(Model model) {
         model.addAttribute("appName", appName);
-        return "gantt_edit";
+        return prefix+"/gantt_edit";
     }
 
-    @GetMapping("/system")
+    @GetMapping(prefix+"/system")
     public String getSystem(Model model) {
         model.addAttribute("systemname", CommandUtils.runCommand("uname -a") );
         model.addAttribute("diskUsage", CommandUtils.runCommand("df -h") );
-        return "system";
+        return prefix+"/system";
     }
 
 
